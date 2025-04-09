@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package chatbot;
+
+service ChatService {
+  rpc GetReply (ChatRequest) returns (ChatReply);
+}
+
+message ChatRequest {
+  string user_message = 1;
+  bool enable_web_access = 2;  // Flag to enable web search functionality
+}
+
+message ChatReply {
+  string ai_response = 1;
+  repeated WebSearchResult web_results = 2;  // Results from web search if performed
+}
+
+message WebSearchResult {
+  string title = 1;
+  string url = 2;
+  string snippet = 3;
+}

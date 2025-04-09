@@ -1,0 +1,4 @@
+.env
+chatbot_pb2_grpc.py
+chatbot_pb2.py
+__pycache__/
