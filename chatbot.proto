@@ -3,7 +3,17 @@ syntax = "proto3";
 package chatbot;
 
 service ChatService {
+  // Unary RPC - Summarize 1 URL or answer a question
   rpc GetReply (ChatRequest) returns (ChatReply);
+  
+  // Server Streaming RPC - Stream chatbot response in parts
+  rpc StreamResponse (ChatRequest) returns (stream ResponseChunk);
+  
+  // Client Streaming RPC - Send multiple URLs to summarize in bulk
+  rpc BulkSummarize (stream UrlRequest) returns (BulkSummaryResponse);
+  
+  // Bidirectional Streaming RPC - Real-time chat with history
+  rpc ChatSession (stream ChatMessage) returns (stream ChatMessage);
 }
 
 message ChatRequest {
@@ -20,4 +30,42 @@ message WebSearchResult {
   string title = 1;
   string url = 2;
   string snippet = 3;
+}
+
+// New messages for supporting different RPC types
+
+// For Server Streaming - Parts of a response
+message ResponseChunk {
+  string content = 1;
+  bool is_final = 2;  // Indicates if this is the final chunk
+}
+
+// For Client Streaming - URLs to summarize
+message UrlRequest {
+  string url = 1;
+  int32 max_length = 2;  // Optional max length for summary
+}
+
+// For Client Streaming - Bulk summary response
+message BulkSummaryResponse {
+  repeated UrlSummary summaries = 1;
+  int32 total_processed = 2;
+}
+
+message UrlSummary {
+  string url = 1;
+  string summary = 2;
+  bool success = 3;
+  string error_message = 4;  // Empty if success is true
+}
+
+// For Bidirectional Streaming - Chat messages
+message ChatMessage {
+  string text = 1;
+  string sender = 2;  // "user" or "ai"
+  string timestamp = 3;  // ISO format timestamp
+  string message_id = 4;  // Unique identifier for the message
+  string reply_to = 5;    // ID of the message this is replying to (if any)
+  string session_id = 6;  // Conversation session ID (to maintain context across reconnects)
+  string user_id = 7;     // Optional user identifier
 }

@@ -1,14 +1,15 @@
-# gRPC Personal Assistant
+# gRPC Text Analyzer with Multiple Communication Patterns
 
-A simple gRPC-based chatbot application that uses the Groq API to process and respond to user messages.
+A comprehensive gRPC-based text analyzer application that demonstrates all four gRPC communication patterns using the Groq API to process and respond to user messages.
 
 ## Project Overview
 
-This project implements a client-server architecture using gRPC for communication:
+This project implements a client-server architecture using gRPC for communication, showcasing:
 
-- The client provides a simple command-line interface for interacting with the AI assistant.
-- The server processes user messages by sending them to the Groq API and returning the AI-generated responses.
-- Communication between client and server is handled via gRPC protocol buffers.
+1. **Unary RPC** - Simple question answering and URL summarization
+2. **Server Streaming RPC** - Stream chatbot responses in parts
+3. **Client Streaming RPC** - Send multiple URLs to summarize in bulk
+4. **Bidirectional Streaming RPC** - Real-time chatbot with message history
 
 ## Prerequisites
 
@@ -24,7 +25,7 @@ This project implements a client-server architecture using gRPC for communicatio
    cd grpc-text-analyzer
    ```
 
-2. Install the required packages:
+2. Install the required packages (using virtual env recommended):
    ```
    pip install grpcio grpcio-tools groq
    ```
@@ -44,7 +45,7 @@ This project implements a client-server architecture using gRPC for communicatio
    $env:GROQ_API_KEY="your_api_key_here"
    ```
 
-4. (Optional) If you need to regenerate the gRPC code from the proto file:
+4. Generate the gRPC code from the proto file:
    ```
    python -m grpc_tools.protoc -I. --python_out=. --grpc_python_out=. chatbot.proto
    ```
@@ -61,25 +62,39 @@ This project implements a client-server architecture using gRPC for communicatio
    python client.py
    ```
 
-3. Interact with the AI assistant through the client terminal. Type your messages and receive AI-generated responses.
+3. Choose from the menu which gRPC communication pattern you want to use:
+   - Option 1: Unary RPC - Simple question answering
+   - Option 2: Server Streaming RPC - See responses arrive in chunks
+   - Option 3: Client Streaming RPC - Submit multiple URLs for summarization
+   - Option 4: Bidirectional Streaming RPC - Interactive chat session with history
 
-4. To exit the client, type `quit`, `exit`, or `bye`.
+4. Follow the prompts to interact with each communication pattern.
+
+5. Use 'quit' to return to the main menu or exit the application.
 
 ## Features
 
-- Real-time interaction with an AI assistant
-- Powered by Groq's LLaMA 3.1 model
-- Simple command-line interface
-- Robust error handling
+- **Unary RPC**: Standard question-answering with single request and response
+- **Server Streaming RPC**: The server breaks down the AI's response into chunks and streams them to the client
+- **Client Streaming RPC**: The client sends multiple URLs to be summarized in a single session
+- **Bidirectional Streaming RPC**: Real-time chat with message history, allowing complex conversation contexts
+
+## Technical Implementation
+
+- **Protocol Buffers**: Defines the service interface and message types
+- **gRPC**: Handles communication between client and server
+- **Groq API**: Powers the AI text generation capabilities
+- **Multithreading**: Used for bidirectional streaming to handle concurrent message sending and receiving
 
 ## Project Structure
 
-- `chatbot.proto`: Defines the gRPC service and message types
+- `chatbot.proto`: Defines the gRPC service and message types for all four communication patterns
 - `chatbot_pb2.py` and `chatbot_pb2_grpc.py`: Generated gRPC code
-- `server.py`: Implements the gRPC server and handles Groq API calls
-- `client.py`: Implements the gRPC client and user interface
+- `server.py`: Implements the gRPC server with handlers for all four RPC types
+- `client.py`: Interactive client with menu-based selection of RPC patterns
 
 ## Notes
 
 - The server uses an insecure channel for simplicity. In a production environment, secure channels should be implemented.
-- Currently, the web_access feature defined in the proto file is not fully implemented.
+- For the client streaming URL summarization, the system doesn't actually fetch the URL content (only simulates it)
+- The bidirectional streaming maintains conversation history for more contextual responses
